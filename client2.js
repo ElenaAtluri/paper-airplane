@@ -23,6 +23,14 @@ var animate = function () {
 	renderer.render( scene, camera );
 };
 
+var context1 = canvas1.getContext('2d');
+	context1.font = "Bold 40px Arial";
+	context1.fillStyle = "rgba(255,0,0,0.95)";
+    context1.fillText('Hello, world!', 0, 50);
+var texture1 = new THREE.Texture(canvas1) 
+
+
+
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 

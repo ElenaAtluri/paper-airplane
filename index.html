@@ -1,56 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>Socket.IO chat</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-    <style>
-      body, html, form { margin:0!important; padding:0!important; border:0!important; }
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; display:inline; color:white;}
-      form button { background: rgb(130, 224, 255); border: none; padding: 10px; height:60px;}
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages li { padding: 5px 10px; }
-      #messages li:nth-child(odd) { background: #eee; }
-    </style>
-  </head>
-  <body>
-    <ul id="messages"></ul>
-    <form class="row" action="">
-        <input class="col s3" id="user" placeholder="Username" /><input class="col s6" id="m" autocomplete="off" placeholder="Text"/><button class="col s3">Send</button>
-    </form>
+	<head>
+		<meta charset=utf-8>
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<title>ProjectPaperAirPlane</title>
+	</head>
+	<body>
+		<script src="three.js"></script>
+		<script src="client.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-    <script src="socket.io/socket.io.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-    <script src="./threejs/three.js"></script>
-    <script>
-      $(function () {
-        var socket = io();
-        var user = "default"
-        $('form').submit(function(){
-          socket.emit('get user', $('#user').val());
-          socket.emit('chat message', $('#m').val());
-          $('#m').val('');
-          $('#user').val('');
-          return false;
-        });
-        socket.on('added user', function(){
-          $('#user').remove();
-          $('#m').removeClass('s6');
-          $('#m').addClass('s9');
-          // $('#user').val(user);
-          // $('#user').attr('readonly', true);
-          // $('#user').style('color', 'white');
-        });
-        socket.on('get user', function(username){
-          user = username;
-        });
-        socket.on('chat message', function(msg){
-          $('#messages').append($('<li>').text(user + ": " + msg));
-        });
-      });
-    </script>
-  </body>
+		<!--<h1 class="banner">PPAP</h1>
+		<h6 class="banner">ProjectPaperAirPlane</h6> 
+		<nav></nav> -->
+
+	</body>
 </html>
