@@ -1,17 +1,134 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-	<head>
-		<meta charset=utf-8>
-		<link rel="stylesheet" type="text/css" href="style.css">
-		<title>ProjectPaperAirPlane</title>
-	</head>
-	<body>
-		<script src="three.js"></script>
-		<script src="client.js"></script>
+  <head>
+    <title>Socket.IO chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <style>
+      body, html, form { margin:0!important; padding:0!important; border:0!important; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      canvas { display: block; }
+    </style>
+  </head>
+  <body>
+    <script src="socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.min.js"></script>
+    <script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tweenjs/0.6.2/tweenjs.min.js"></script>
+    <script>
+      var socket = io();
 
-		<!--<h1 class="banner">PPAP</h1>
-		<h6 class="banner">ProjectPaperAirPlane</h6> 
-		<nav></nav> -->
+      // Scene and Document Preparation
 
-	</body>
+      var scene = new THREE.Scene();
+      scene.background = new THREE.Color( 0xffffff );
+      scene.fog = new THREE.FogExp2( 0xffffff, 0.05 );
+
+      var light = new THREE.DirectionalLight(0xff0000, 5);
+      scene.add(light);
+
+      var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+      var renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+      var controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+      document.body.appendChild(renderer.domElement);
+
+      window.addEventListener( 'resize', onWindowResize, false );
+
+      function onWindowResize(){
+
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+
+          renderer.setSize( window.innerWidth, window.innerHeight );
+
+      }
+
+      // Object Parent (All player-spawn objects will be child of this group)
+      var cubes = new THREE.Group();
+
+      // Adds a cube given an object {x: x-pos, y: y-pos, z: z-pos, color: new Color()}
+      var addCube = function(new_cube) {
+        var geometry = new THREE.BoxGeometry(1, 1, 1);
+        var material = new THREE.MeshBasicMaterial({color: new_cube.color});
+        var cube = new THREE.Mesh(geometry, material);
+        cube.position.x = new_cube.x;
+        cube.position.y = new_cube.y;
+        cube.position.z = new_cube.z;
+        cubes.add(cube);
+
+        // var position = cube.position;
+        // var target = { x: (Math.random()-0.5)*12, y: (Math.random()-0.5)*12, z: (Math.random()-0.5)*12 };
+        // var tween = new TWEEN.Tween(position).to(target, 500);
+        // tween.onUpdate(function(){
+        //   mesh.position.x = position.x;
+        //   mesh.position.y = position.y;
+        //   mesh.position.z = position.z;
+        // });
+      };
+
+      var animate = function () {
+        requestAnimationFrame( animate );
+        renderer.render( scene, camera );
+
+        camera.rotation.y += 0.01;
+        camera.rotation.x += 0.001;
+
+      };
+
+      animate();
+
+      $(document).keypress(function(e) {
+        if (e.which == 32) {
+          socket.emit('add object', {x:(Math.random()-0.5)*20, y:(Math.random()-0.5)*20, z:(Math.random()-0.5)*20, color: new THREE.Color(Math.random() * 0xffffff)});
+        }
+      });
+
+      socket.on('add object', function({x, y, z, color}) {
+        addCube({x:x, y:y, z:z, color:color});
+        socket.emit('cubes', {x:x, y:y, z:z, color:color});
+      });
+
+      socket.on('cubes', function(new_cubes) {
+        for (var i in new_cubes) {
+          addCube(new_cubes[i]);
+        }
+      });
+
+      scene.add(cubes);
+
+      // tween.start();
+      // TWEEN.update();
+
+      // $(function () {
+      //   var socket = io();
+      //   var user = "default"
+      //   $('form').submit(function(){
+      //     socket.emit('get user', $('#user').val());
+      //     socket.emit('chat message', $('#m').val());
+      //     $('#m').val('');
+      //     $('#user').val('');
+      //     return false;
+      //   });
+      //   socket.on('added user', function(){
+      //     $('#user').stop().remove();
+      //     $('#m').stop().removeClass('s6');
+      //     $('#m').stop().addClass('s9');
+      //     // $('#user').val(user);
+      //     // $('#user').attr('readonly', true);
+      //     // $('#user').style('color', 'white');
+      //   });
+      //   socket.on('get user', function(username){
+      //     user = username;
+      //   });
+      //   socket.on('chat message', function(msg){
+      //     $('#messages').append($('<li>').text(user + ": " + msg));
+      //   });
+      // });
+    </script>
+  </body>
 </html>
